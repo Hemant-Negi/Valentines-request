@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Be My Valentine?</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #ffe6e6;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden; 
+        }
+
+        .container {
+            text-align: center;
+            position: relative;
+            width: 100%;
+            z-index: 1;
+        }
+
+        h1 {
+            color: #d32f2f;
+            font-size: 2.1rem;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+        }
+
+        .gif-container img {
+            width: 200px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .btn {
+            font-size: 1.2rem;
+            padding: 10px 30px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 10px;
+            transition: transform 0.2s ease, background-color 0.2s;
+            white-space: nowrap;
+        }
+
+        #yesBtn {
+            background-color: #4CAF50;
+            color: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 10; 
+            transition: font-size 0.3s ease; /* Makes the growing effect smooth */
+        }
+
+        #yesBtn:hover {
+            transform: scale(1.05);
+            background-color: #45a049;
+        }
+
+        #noBtn {
+            background-color: #f44336;
+            color: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s ease; 
+            z-index: 5; 
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="gif-container" id="gifContainer">
+            <img src="https://media.tenor.com/D1N20hlTfRMAAAAi/twitter-cute.gif" alt="Cute Valentine GIF">
+        </div>
+
+        <h1 id="question">Will you be my Rajni without J?</h1>
+
+        <div class="btn-group">
+            <button class="btn" id="yesBtn">Yes 💖</button>
+            <button class="btn" id="noBtn">No 💔</button>
+        </div>
+    </div>
+
+    <script>
+        const yesBtn = document.getElementById('yesBtn');
+        const noBtn = document.getElementById('noBtn');
+        const question = document.getElementById('question');
+        const gifContainer = document.getElementById('gifContainer');
+
+        const sadPhrases = [
+            "Are you sure rajni? 🥺",
+            "ese mt kr  💔",
+            "I'm gonna cry... 😭",
+            "You're breaking my heart!",
+            "Last chance! 🙏",
+            " 😢😢😢",
+            "Really? 😞",
+            "Think again! 🧐"
+        ];
+        let phraseIndex = 0;
+
+        // YES BUTTON
+        yesBtn.addEventListener('click', () => {
+            question.innerHTML = "I love you 22222 pucchi🥰";
+            gifContainer.innerHTML = '<img src="https://media.tenor.com/gUiu1zyxfzYAAAAi/bear-kiss-bear-kisses.gif" alt="Happy Gif">';
+            
+            yesBtn.style.display = 'none';
+            noBtn.style.display = 'none';
+        });
+
+        // NO BUTTON
+        noBtn.addEventListener('click', () => {
+            // 1. Update text 
+            noBtn.innerText = sadPhrases[phraseIndex];
+            phraseIndex = (phraseIndex + 1) % sadPhrases.length;
+
+            // 2. Make the YES button bigger
+            const currentFontSize = parseFloat(window.getComputedStyle(yesBtn).fontSize);
+            yesBtn.style.fontSize = (currentFontSize + 15) + 'px'; // Increased growth rate a bit
+
+            // 3. Get Dimensions
+            const btnWidth = noBtn.offsetWidth;
+            const btnHeight = noBtn.offsetHeight;
+            const maxLeft = window.innerWidth - btnWidth - 20;
+            const maxTop = window.innerHeight - btnHeight - 20;
+
+            let randomX, randomY;
+            let isOverlapping = true;
+            let attempts = 0;
+
+            // 4. Collision Detection Loop
+            // Keep picking random spots until we find one that DOESN'T touch the Yes button
+            while (isOverlapping && attempts < 50) {
+                randomX = Math.max(10, Math.floor(Math.random() * maxLeft));
+                randomY = Math.max(10, Math.floor(Math.random() * maxTop));
+
+                // Get the current location and size of the Yes button
+                const yesRect = yesBtn.getBoundingClientRect();
+
+                // Check if the proposed No button spot overlaps with the Yes button
+                // We add a 10px buffer so they don't even touch edges
+                isOverlapping = !(
+                    randomX + btnWidth + 10 < yesRect.left ||   // No is strictly to the left of Yes
+                    randomX - 10 > yesRect.right ||             // No is strictly to the right of Yes
+                    randomY + btnHeight + 10 < yesRect.top ||   // No is strictly above Yes
+                    randomY - 10 > yesRect.bottom               // No is strictly below Yes
+                );
+
+                attempts++; // Prevent infinite loop if the screen gets too full
+            }
+
+            // 5. Apply the safe position
+            noBtn.style.position = 'fixed'; 
+            noBtn.style.left = randomX + 'px';
+            noBtn.style.top = randomY + 'px';
+        });
+    </script>
+</body>
+</html>
